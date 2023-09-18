@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 
-// const getId = () => (100000 * Math.random()).toFixed(0)
+const getId = () => (100000 * Math.random()).toFixed(0)
 const urlDatabase = {}; 
 // Basic Configuration
 const port = process.env.PORT || 3000;
@@ -37,7 +37,7 @@ app.post('/api/shorturl', (req, res) => {
   const { url } = req.body;
 
   if (isValidURL(url)) {
-    const short_url = 1;
+    const short_url = getId();
     urlDatabase[short_url] = url.startsWith('http://') || url.startsWith('https://') ? url : `https://${url}`;
     res.json({ original_url : url, short_url });
   } else {
