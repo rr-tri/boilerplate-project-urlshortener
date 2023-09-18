@@ -37,7 +37,7 @@ app.post('/api/shorturl', (req, res) => {
   const { url } = req.body;
 
   if (isValidURL(url)) {
-    const short_url = getId();
+    const short_url = 1;
     urlDatabase[short_url] = url.startsWith('http://') || url.startsWith('https://') ? url : `https://${url}`;
     res.json({ original_url : url, short_url });
   } else {
