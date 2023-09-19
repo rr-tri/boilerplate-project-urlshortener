@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const dns = require('dns')
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const app = express();
@@ -34,21 +35,43 @@ app.get('/api/shorturl/:short_url', (req, res) => {
 });
 
 app.post('/api/shorturl', (req, res) => {
-  const { url } = req.body;
-
-  if (isValidURL(url)) {
-    const short_url = getId();
-    const original_url = url.startsWith('http://') || url.startsWith('https://') ? url : `http://${url}`;
-    urlDatabase[short_url] =  original_url
-    res.json({ original_url, short_url });
-  } else {
+  try{const { url } = req.body;
+  console.log('url =', url)
+ 
+  isValidURL(url, (isValid) => {
+    if (isValid) {
+      console.log(`${url} is a valid URL.`);
+      const short_url = getId();
+      const original_url = url
+      urlDatabase[short_url] =  original_url
+      res.json({ original_url, short_url });
+    } else {
+      console.log(`${url} is not a valid URL.`);
+      res.json({ error: 'Invalid URL' });
+    }
+  });
+}catch(err){
     res.json({ error: 'Invalid URL' });
   }
+  
+  
 });
 
-function isValidURL(str) {
-  const pattern = /^(https?:\/\/)?([a-zA-Z0-9_-]+\.)+[a-zA-Z]{2,6}([/a-zA-Z0-9_-]*)*\/?$/;
-  return pattern.test(str);
+
+function isValidURL(url, callback) {
+  // Extract the host (domain) from the URL
+  const host = new URL(url).hostname;
+  console.log('host',host)
+  // Perform a DNS lookup for the host
+  dns.lookup(host, (err, address, family) => {
+    if (err) {
+      // If an error occurs, it means the host could not be resolved
+      callback(false);
+    } else {
+      // The host was successfully resolved to an IP address
+      callback(true);
+    }
+  });
 }
 
 app.listen(port, function() {
