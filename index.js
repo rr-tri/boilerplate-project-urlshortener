@@ -36,18 +36,18 @@ app.get('/api/shorturl/:short_url', (req, res) => {
 
 app.post('/api/shorturl', (req, res) => {
   try{const { url } = req.body;
-  console.log('url =', url)
+  // console.log('url =', url)
  
   isValidURL(url, (isValid) => {
     if (isValid) {
-      console.log(`${url} is a valid URL.`);
+      // console.log(`${url} is a valid URL.`);
       const short_url = getId();
       const original_url = url
       urlDatabase[short_url] =  original_url
-      res.json({ original_url, short_url });
+      return res.json({ original_url, short_url });
     } else {
-      console.log(`${url} is not a valid URL.`);
-      res.json({ error: 'Invalid URL' });
+      // console.log(`${url} is not a valid URL.`);
+      return res.json({ error: 'Invalid URL' });
     }
   });
 }catch(err){
@@ -61,7 +61,7 @@ app.post('/api/shorturl', (req, res) => {
 function isValidURL(url, callback) {
   // Extract the host (domain) from the URL
   const host = new URL(url).hostname;
-  console.log('host',host)
+  // console.log('host',host)
   // Perform a DNS lookup for the host
   dns.lookup(host, (err, address, family) => {
     if (err) {
